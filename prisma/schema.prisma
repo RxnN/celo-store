@@ -1,0 +1,245 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELED
+}
+
+enum BannerPlacement {
+  CARD
+  CAROUSEL
+  HERO
+}
+
+enum FreeShippingType {
+  MIN_VALUE
+  MIN_QUANTITY
+  SPECIFIC_PRODUCT
+}
+
+enum CouponType {
+  PERCENT
+  FIXED
+}
+
+enum CouponScope {
+  ORDER_TOTAL
+  SPECIFIC_PRODUCT
+}
+
+model User {
+  id           String               @id @default(cuid())
+  name         String
+  email        String               @unique
+  phone        String               @unique
+  passwordHash String
+  role         Role                 @default(CUSTOMER)
+  createdAt    DateTime             @default(now())
+  addresses    Address[]
+  orders       Order[]
+  resetTokens  PasswordResetToken[]
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+}
+
+model Address {
+  id           String  @id @default(cuid())
+  userId       String?
+  user         User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label        String?
+  recipient    String
+  street       String
+  number       String
+  complement   String?
+  neighborhood String
+  city         String
+  state        String
+  zip          String
+  phone        String
+  isDefault    Boolean @default(false)
+  orders       Order[]
+
+  @@index([userId])
+}
+
+model Brand {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  slug     String    @unique
+  products Product[]
+}
+
+model Category {
+  id            String        @id @default(cuid())
+  name          String        @unique
+  slug          String        @unique
+  products      Product[]
+  subcategories Subcategory[]
+}
+
+model Subcategory {
+  id         String    @id @default(cuid())
+  name       String
+  slug       String
+  categoryId String
+  category   Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  products   Product[]
+
+  @@unique([categoryId, slug])
+}
+
+model Product {
+  id             String            @id @default(cuid())
+  name           String
+  slug           String            @unique
+  description    String
+  price          Decimal           @db.Decimal(10, 2)
+  compareAtPrice Decimal?          @db.Decimal(10, 2)
+  featured       Boolean           @default(false)
+  active         Boolean           @default(true)
+  brandId        String?
+  brand          Brand?            @relation(fields: [brandId], references: [id])
+  categoryId     String
+  category       Category          @relation(fields: [categoryId], references: [id])
+  subcategoryId  String?
+  subcategory    Subcategory?      @relation(fields: [subcategoryId], references: [id])
+  variants       ProductVariant[]
+  images         ProductImage[]
+  orderItems     OrderItem[]
+  freeShipping   FreeShippingRule[]
+  coupons        Coupon[]
+  createdAt      DateTime          @default(now())
+
+  weightGrams Int?
+  heightCm    Int?
+  widthCm     Int?
+  lengthCm    Int?
+
+  @@index([categoryId])
+  @@index([brandId])
+  @@index([subcategoryId])
+}
+
+model ProductImage {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url       String
+  position  Int     @default(0)
+
+  @@index([productId])
+}
+
+model ProductVariant {
+  id         String      @id @default(cuid())
+  productId  String
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  size       String
+  color      String
+  stock      Int         @default(0)
+  orderItems OrderItem[]
+
+  @@unique([productId, size, color])
+}
+
+model Banner {
+  id        String          @id @default(cuid())
+  title     String?
+  subtitle  String?
+  ctaLabel  String?
+  ctaHref   String?
+  theme     String          @default("cyan")
+  imageUrl  String?
+  imageOnly Boolean         @default(false)
+  placement BannerPlacement @default(CARD)
+  position  Int             @default(0)
+  active    Boolean         @default(true)
+}
+
+model FreeShippingRule {
+  id          String           @id @default(cuid())
+  label       String
+  type        FreeShippingType
+  minValue    Decimal?         @db.Decimal(10, 2)
+  minQuantity Int?
+  productId   String?
+  product     Product?         @relation(fields: [productId], references: [id])
+  active      Boolean          @default(true)
+  createdAt   DateTime         @default(now())
+}
+
+model Coupon {
+  id        String      @id @default(cuid())
+  code      String      @unique
+  type      CouponType
+  value     Decimal     @db.Decimal(10, 2)
+  scope     CouponScope
+  productId String?
+  product   Product?    @relation(fields: [productId], references: [id])
+  active    Boolean     @default(true)
+  createdAt DateTime    @default(now())
+  orders    Order[]
+}
+
+model Order {
+  id             String      @id @default(cuid())
+  userId         String?
+  user           User?       @relation(fields: [userId], references: [id])
+  guestName      String?
+  guestEmail     String?
+  guestPhone     String?
+  addressId      String
+  address        Address     @relation(fields: [addressId], references: [id])
+  items          OrderItem[]
+  subtotal       Decimal     @db.Decimal(10, 2)
+  shipping       Decimal     @db.Decimal(10, 2) @default(0)
+  discount       Decimal     @db.Decimal(10, 2) @default(0)
+  couponId       String?
+  coupon         Coupon?     @relation(fields: [couponId], references: [id])
+  total          Decimal     @db.Decimal(10, 2)
+  status         OrderStatus @default(PENDING)
+  trackingCode   String?
+  mpPreferenceId String?
+  mpPaymentId    String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  @@index([userId])
+}
+
+model OrderItem {
+  id        String         @id @default(cuid())
+  orderId   String
+  order     Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product        @relation(fields: [productId], references: [id])
+  variantId String
+  variant   ProductVariant @relation(fields: [variantId], references: [id])
+  quantity  Int
+  unitPrice Decimal        @db.Decimal(10, 2)
+
+  @@index([orderId])
+}
