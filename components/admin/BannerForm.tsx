@@ -8,7 +8,7 @@ import { createBanner, BannerFormState } from "@/app/admin/banners/actions";
 const PIXEL_HINTS: Record<string, string> = {
   CARD: "recomendado 800×500px (proporção ~16:10)",
   CAROUSEL: "recomendado 480×600px (proporção ~4:5)",
-  HERO: "recomendado 1920×600px (faixa larga, ~3.2:1)",
+  HERO: "recomendado 1920×800px (~2.4:1) — evite texto muito perto do topo/rodapé, as bordas podem ser levemente cortadas em telas muito largas",
 };
 
 const initialState: BannerFormState = {};

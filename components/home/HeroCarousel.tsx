@@ -32,7 +32,7 @@ export function HeroCarousel({ banners }: { banners: HeroBanner[] }) {
   }
 
   return (
-    <div className="relative h-[260px] w-full overflow-hidden border-b border-line sm:h-[420px]">
+    <div className="relative aspect-[12/5] max-h-[560px] w-full overflow-hidden border-b border-line sm:max-h-[680px]">
       {slides.map((slide, i) => {
         const image = (
           <Image

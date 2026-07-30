@@ -78,7 +78,7 @@ async function getCategoryShortcuts(): Promise<CategoryShortcut[]> {
   return categories.map((c) => ({
     slug: c.slug,
     name: c.name,
-    image: c.products[0]?.images[0]?.url ?? null,
+    image: c.imageUrl ?? c.products[0]?.images[0]?.url ?? null,
   }));
 }
 
