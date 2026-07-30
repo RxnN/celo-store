@@ -9,6 +9,7 @@ type HeroBanner = {
   title: string | null;
   ctaHref: string | null;
   imageUrl: string | null;
+  imageUrlMobile: string | null;
 };
 
 const INTERVAL_MS = 3000;
@@ -35,13 +36,24 @@ export function HeroCarousel({ banners }: { banners: HeroBanner[] }) {
     <div className="relative h-[300px] w-full overflow-hidden border-b border-line sm:h-[490px]">
       {slides.map((slide, i) => {
         const image = (
-          <Image
-            src={slide.imageUrl!}
-            alt={slide.title ?? ""}
-            fill
-            priority={i === 0}
-            className="object-cover"
-          />
+          <>
+            <Image
+              src={slide.imageUrl!}
+              alt={slide.title ?? ""}
+              fill
+              priority={i === 0}
+              className={`object-cover ${slide.imageUrlMobile ? "hidden sm:block" : ""}`}
+            />
+            {slide.imageUrlMobile ? (
+              <Image
+                src={slide.imageUrlMobile}
+                alt={slide.title ?? ""}
+                fill
+                priority={i === 0}
+                className="object-cover sm:hidden"
+              />
+            ) : null}
+          </>
         );
         return (
           <div

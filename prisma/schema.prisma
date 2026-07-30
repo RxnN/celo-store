@@ -24,6 +24,7 @@ enum BannerPlacement {
   CARD
   CAROUSEL
   HERO
+  CATEGORY_ICON
 }
 
 enum FreeShippingType {
@@ -96,9 +97,9 @@ model Category {
   id            String        @id @default(cuid())
   name          String        @unique
   slug          String        @unique
-  imageUrl      String?
   products      Product[]
   subcategories Subcategory[]
+  banners       Banner[]
 }
 
 model Subcategory {
@@ -167,17 +168,20 @@ model ProductVariant {
 }
 
 model Banner {
-  id        String          @id @default(cuid())
-  title     String?
-  subtitle  String?
-  ctaLabel  String?
-  ctaHref   String?
-  theme     String          @default("cyan")
-  imageUrl  String?
-  imageOnly Boolean         @default(false)
-  placement BannerPlacement @default(CARD)
-  position  Int             @default(0)
-  active    Boolean         @default(true)
+  id            String          @id @default(cuid())
+  title         String?
+  subtitle      String?
+  ctaLabel      String?
+  ctaHref       String?
+  theme         String          @default("cyan")
+  imageUrl      String?
+  imageUrlMobile String?
+  imageOnly     Boolean         @default(false)
+  placement     BannerPlacement @default(CARD)
+  position      Int             @default(0)
+  active        Boolean         @default(true)
+  categoryId    String?
+  category      Category?       @relation(fields: [categoryId], references: [id])
 }
 
 model FreeShippingRule {

@@ -20,9 +20,15 @@ export async function createBanner(
   const theme = String(formData.get("theme") ?? "cyan");
   const placement = String(formData.get("placement") ?? "CARD") as BannerPlacement;
   const imageUrl = String(formData.get("imageUrl") ?? "").trim();
-  const imageOnly = formData.get("imageOnly") === "on" || placement === "HERO";
+  const imageUrlMobile = String(formData.get("imageUrlMobile") ?? "").trim();
+  const categoryId = String(formData.get("categoryId") ?? "").trim();
+  const imageOnly = formData.get("imageOnly") === "on" || placement === "HERO" || placement === "CATEGORY_ICON";
   const position = Number(formData.get("position") ?? 0);
 
+  if (placement === "CATEGORY_ICON") {
+    if (!categoryId) return { error: "Escolha a qual categoria esse ícone pertence." };
+    if (!imageUrl) return { error: "O ícone de categoria precisa de uma imagem." };
+  }
   if (placement === "HERO" && !imageUrl) {
     return { error: "O banner cheio precisa de uma imagem." };
   }
@@ -42,11 +48,14 @@ export async function createBanner(
       theme,
       placement,
       imageUrl: imageUrl || null,
+      imageUrlMobile: placement === "HERO" ? imageUrlMobile || null : null,
       imageOnly,
       position,
+      categoryId: placement === "CATEGORY_ICON" ? categoryId : null,
     },
   });
   revalidatePath("/admin/banners");
+  revalidatePath("/");
   return {};
 }
 

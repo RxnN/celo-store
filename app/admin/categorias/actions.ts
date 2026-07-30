@@ -9,12 +9,10 @@ export async function createCategory(formData: FormData) {
 
   const name = String(formData.get("name") ?? "").trim();
   const slug = String(formData.get("slug") ?? "").trim();
-  const imageUrl = String(formData.get("imageUrl") ?? "").trim();
   if (!name || !slug) return;
 
-  await db.category.create({ data: { name, slug, imageUrl: imageUrl || null } });
+  await db.category.create({ data: { name, slug } });
   revalidatePath("/admin/categorias");
-  revalidatePath("/");
 }
 
 export async function updateCategory(formData: FormData) {
@@ -23,12 +21,10 @@ export async function updateCategory(formData: FormData) {
   const id = String(formData.get("id") ?? "");
   const name = String(formData.get("name") ?? "").trim();
   const slug = String(formData.get("slug") ?? "").trim();
-  const imageUrl = String(formData.get("imageUrl") ?? "").trim();
   if (!id || !name || !slug) return;
 
-  await db.category.update({ where: { id }, data: { name, slug, imageUrl: imageUrl || null } });
+  await db.category.update({ where: { id }, data: { name, slug } });
   revalidatePath("/admin/categorias");
-  revalidatePath("/");
 }
 
 export async function deleteCategory(id: string) {

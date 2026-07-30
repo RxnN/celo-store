@@ -4,7 +4,7 @@ import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
-export type CategoryShortcut = { slug: string; name: string; image: string | null };
+export type CategoryShortcut = { slug: string; name: string; image: string | null; href: string };
 
 export function CategoryShortcuts({ categories }: { categories: CategoryShortcut[] }) {
   const trackRef = useRef<HTMLDivElement>(null);
@@ -41,7 +41,7 @@ export function CategoryShortcuts({ categories }: { categories: CategoryShortcut
         {categories.map((c) => (
           <Link
             key={c.slug}
-            href={`/categoria/${c.slug}`}
+            href={c.href}
             className="group flex shrink-0 flex-col items-center gap-2"
           >
             <div className="neon-interactive flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border border-line bg-surface-2 group-hover:border-cyan sm:h-20 sm:w-20">

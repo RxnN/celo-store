@@ -8,20 +8,25 @@ const PLACEMENT_LABEL: Record<string, string> = {
   CARD: "card (linha de promoções)",
   CAROUSEL: "carrossel (slide de destaques)",
   HERO: "banner cheio (topo, auto-rotativo)",
+  CATEGORY_ICON: "ícone de categoria (bolinha da home)",
 };
 
 export default async function AdminBannersPage() {
-  const banners = await db.banner.findMany({ orderBy: [{ placement: "asc" }, { position: "asc" }] });
+  const [banners, categories] = await Promise.all([
+    db.banner.findMany({ orderBy: [{ placement: "asc" }, { position: "asc" }], include: { category: true } }),
+    db.category.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true } }),
+  ]);
 
   return (
     <div className="max-w-3xl">
       <h1 className="mb-1 text-xl font-extrabold">Promoções</h1>
       <p className="mb-6 text-sm text-text-muted">
-        Escolha se a promoção aparece como card na home, como slide no carrossel de destaques, ou
-        como banner cheio no topo (com foto trocando sozinha a cada 3s).
+        Escolha se a promoção aparece como card na home, como slide no carrossel de destaques,
+        como banner cheio no topo (com foto trocando sozinha a cada 3s), ou como ícone de categoria
+        (bolinha da home).
       </p>
 
-      <BannerForm />
+      <BannerForm categories={categories} />
 
       <div className="flex flex-col gap-3">
         {banners.map((b) => (
@@ -36,10 +41,16 @@ export default async function AdminBannersPage() {
                 </div>
               ) : null}
               <div>
-                <p className="font-semibold">{b.title || <span className="text-text-faint">(sem título)</span>}</p>
+                <p className="font-semibold">
+                  {b.category
+                    ? b.category.name
+                    : b.title || <span className="text-text-faint">(sem título)</span>}
+                </p>
                 <p className="text-xs text-text-muted">
-                  {PLACEMENT_LABEL[b.placement]} · tema {b.theme}
-                  {b.imageOnly ? " · só imagem" : ""}
+                  {PLACEMENT_LABEL[b.placement]}
+                  {b.placement !== "CATEGORY_ICON" ? ` · tema ${b.theme}` : ""}
+                  {b.imageOnly && b.placement !== "HERO" && b.placement !== "CATEGORY_ICON" ? " · só imagem" : ""}
+                  {b.imageUrlMobile ? " · com versão mobile" : ""}
                   {b.ctaLabel ? ` · ${b.ctaLabel}` : ""}
                   {b.ctaHref ? ` → ${b.ctaHref}` : ""}
                 </p>

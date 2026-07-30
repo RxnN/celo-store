@@ -1,7 +1,6 @@
 import { db } from "@/lib/db";
 import { Button } from "@/components/ui/Button";
 import { CategoryRow } from "@/components/admin/CategoryRow";
-import { ImageUploader } from "@/components/admin/ImageUploader";
 import { createCategory } from "./actions";
 
 export default async function AdminCategoriesPage() {
@@ -14,31 +13,24 @@ export default async function AdminCategoriesPage() {
     <div className="max-w-2xl">
       <h1 className="mb-6 text-xl font-extrabold">Categorias</h1>
 
-      <form action={createCategory} className="mb-8 flex flex-col gap-3 rounded-xl border border-line bg-surface p-4">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-          <div className="flex-1">
-            <label className="mb-1.5 block text-xs font-semibold text-text-muted">Nome</label>
-            <input
-              name="name"
-              required
-              className="h-10 w-full rounded-lg border border-line bg-surface-2 px-3 text-sm focus:border-cyan focus:outline-none"
-            />
-          </div>
-          <div className="flex-1">
-            <label className="mb-1.5 block text-xs font-semibold text-text-muted">Slug</label>
-            <input
-              name="slug"
-              required
-              className="h-10 w-full rounded-lg border border-line bg-surface-2 px-3 text-sm focus:border-cyan focus:outline-none"
-            />
-          </div>
-          <Button type="submit">adicionar</Button>
+      <form action={createCategory} className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end">
+        <div className="flex-1">
+          <label className="mb-1.5 block text-xs font-semibold text-text-muted">Nome</label>
+          <input
+            name="name"
+            required
+            className="h-10 w-full rounded-lg border border-line bg-surface-2 px-3 text-sm focus:border-cyan focus:outline-none"
+          />
         </div>
-        <ImageUploader
-          name="imageUrl"
-          label="Ícone (bolinha da home)"
-          hint="recomendado 200×200px, imagem quadrada"
-        />
+        <div className="flex-1">
+          <label className="mb-1.5 block text-xs font-semibold text-text-muted">Slug</label>
+          <input
+            name="slug"
+            required
+            className="h-10 w-full rounded-lg border border-line bg-surface-2 px-3 text-sm focus:border-cyan focus:outline-none"
+          />
+        </div>
+        <Button type="submit">adicionar</Button>
       </form>
 
       <div className="overflow-x-auto rounded-xl border border-line">

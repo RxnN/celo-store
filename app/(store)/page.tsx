@@ -62,7 +62,7 @@ async function getBanners() {
   });
 }
 
-async function getCategoryShortcuts(): Promise<CategoryShortcut[]> {
+async function getCategoriesForShortcuts() {
   const categories = await db.category.findMany({
     orderBy: { name: "asc" },
     include: {
@@ -76,23 +76,40 @@ async function getCategoryShortcuts(): Promise<CategoryShortcut[]> {
   });
 
   return categories.map((c) => ({
+    id: c.id,
     slug: c.slug,
     name: c.name,
-    image: c.imageUrl ?? c.products[0]?.images[0]?.url ?? null,
+    fallbackImage: c.products[0]?.images[0]?.url ?? null,
   }));
 }
 
 export default async function HomePage() {
-  const [sectionsData, featuredProducts, banners, categoryShortcuts] = await Promise.all([
+  const [sectionsData, featuredProducts, banners, categories] = await Promise.all([
     getSectionsData(),
     getFeaturedProducts(),
     getBanners(),
-    getCategoryShortcuts(),
+    getCategoriesForShortcuts(),
   ]);
 
   const cardBanners = banners.filter((b) => b.placement === "CARD");
   const carouselPromos = banners.filter((b) => b.placement === "CAROUSEL");
   const heroBanners = banners.filter((b) => b.placement === "HERO");
+
+  const categoryIcons = new Map(
+    banners
+      .filter((b) => b.placement === "CATEGORY_ICON" && b.categoryId)
+      .map((b) => [b.categoryId as string, b])
+  );
+
+  const categoryShortcuts: CategoryShortcut[] = categories.map((c) => {
+    const icon = categoryIcons.get(c.id);
+    return {
+      slug: c.slug,
+      name: c.name,
+      image: icon?.imageUrl ?? c.fallbackImage ?? null,
+      href: icon?.ctaHref || `/categoria/${c.slug}`,
+    };
+  });
 
   return (
     <>
