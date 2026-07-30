@@ -3,7 +3,7 @@
 import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { ImageUploader } from "./ImageUploader";
-import { createBanner, BannerFormState } from "@/app/admin/banners/actions";
+import { BannerFormState } from "@/app/admin/banners/actions";
 
 const PIXEL_HINTS: Record<string, string> = {
   CARD: "recomendado 800×500px (proporção ~16:10)",
@@ -15,14 +15,34 @@ const PIXEL_HINTS: Record<string, string> = {
 
 const initialState: BannerFormState = {};
 
+export type BannerDefaultValues = {
+  placement: string;
+  theme: string;
+  position: number;
+  imageUrl: string | null;
+  imageUrlMobile: string | null;
+  imageOnly: boolean;
+  title: string | null;
+  subtitle: string | null;
+  ctaLabel: string | null;
+  ctaHref: string | null;
+  categoryId: string | null;
+};
+
 export function BannerForm({
   categories,
+  action,
+  defaultValues,
+  submitLabel = "adicionar promoção",
 }: {
   categories: { id: string; name: string }[];
+  action: (prevState: BannerFormState, formData: FormData) => Promise<BannerFormState>;
+  defaultValues?: BannerDefaultValues;
+  submitLabel?: string;
 }) {
-  const [state, formAction, pending] = useActionState(createBanner, initialState);
-  const [placement, setPlacement] = useState("CARD");
-  const [imageOnly, setImageOnly] = useState(false);
+  const [state, formAction, pending] = useActionState(action, initialState);
+  const [placement, setPlacement] = useState(defaultValues?.placement ?? "CARD");
+  const [imageOnly, setImageOnly] = useState(defaultValues?.imageOnly ?? false);
   const isHero = placement === "HERO";
   const isCategoryIcon = placement === "CATEGORY_ICON";
 
@@ -42,6 +62,7 @@ export function BannerForm({
         </select>
         <select
           name="theme"
+          defaultValue={defaultValues?.theme ?? "cyan"}
           disabled={isHero || isCategoryIcon}
           className="h-10 rounded-lg border border-line bg-surface-2 px-3 text-sm focus:border-cyan focus:outline-none disabled:opacity-40"
         >
@@ -53,7 +74,7 @@ export function BannerForm({
           name="position"
           type="number"
           placeholder="Ordem"
-          defaultValue={0}
+          defaultValue={defaultValues?.position ?? 0}
           className="h-10 rounded-lg border border-line bg-surface-2 px-3 text-sm focus:border-cyan focus:outline-none"
         />
       </div>
@@ -62,7 +83,7 @@ export function BannerForm({
         <select
           name="categoryId"
           required
-          defaultValue=""
+          defaultValue={defaultValues?.categoryId ?? ""}
           className="h-10 rounded-lg border border-line bg-surface-2 px-3 text-sm focus:border-cyan focus:outline-none"
         >
           <option value="" disabled>
@@ -76,13 +97,19 @@ export function BannerForm({
         </select>
       ) : null}
 
-      <ImageUploader name="imageUrl" label="Imagem" hint={PIXEL_HINTS[placement]} />
+      <ImageUploader
+        name="imageUrl"
+        label="Imagem"
+        hint={PIXEL_HINTS[placement]}
+        initialUrl={defaultValues?.imageUrl}
+      />
 
       {isHero ? (
         <ImageUploader
           name="imageUrlMobile"
           label="Imagem mobile (opcional)"
           hint="recomendado 1080×830px (~1.3:1) — se não enviar, usa a imagem acima também no celular"
+          initialUrl={defaultValues?.imageUrlMobile}
         />
       ) : null}
 
@@ -94,6 +121,7 @@ export function BannerForm({
           <input
             name="title"
             placeholder="Descrição da imagem (opcional, acessibilidade)"
+            defaultValue={defaultValues?.title ?? ""}
             className="h-10 rounded-lg border border-line bg-surface-2 px-3 text-sm focus:border-cyan focus:outline-none"
           />
         </>
@@ -119,11 +147,13 @@ export function BannerForm({
             <input
               name="title"
               placeholder="Título"
+              defaultValue={defaultValues?.title ?? ""}
               className="h-10 rounded-lg border border-line bg-surface-2 px-3 text-sm focus:border-cyan focus:outline-none"
             />
             <input
               name="subtitle"
               placeholder="Subtítulo (opcional)"
+              defaultValue={defaultValues?.subtitle ?? ""}
               className="h-10 rounded-lg border border-line bg-surface-2 px-3 text-sm focus:border-cyan focus:outline-none"
             />
           </div>
@@ -131,6 +161,7 @@ export function BannerForm({
             <input
               name="ctaLabel"
               placeholder="Texto do botão (opcional)"
+              defaultValue={defaultValues?.ctaLabel ?? ""}
               className="h-10 rounded-lg border border-line bg-surface-2 px-3 text-sm focus:border-cyan focus:outline-none"
             />
           </div>
@@ -144,13 +175,14 @@ export function BannerForm({
             ? "Link ao clicar (opcional — se vazio, vai pra página da categoria)"
             : "Link ao clicar (opcional, ex: /categoria/camisetas)"
         }
+        defaultValue={defaultValues?.ctaHref ?? ""}
         className="h-10 rounded-lg border border-line bg-surface-2 px-3 text-sm focus:border-cyan focus:outline-none"
       />
 
       {state.error ? <p className="text-sm text-red">{state.error}</p> : null}
 
       <Button type="submit" disabled={pending} className="w-fit">
-        {pending ? "salvando..." : "adicionar promoção"}
+        {pending ? "salvando..." : submitLabel}
       </Button>
     </form>
   );

@@ -7,12 +7,21 @@ import { requireAdmin } from "@/lib/auth-guards";
 
 export type BannerFormState = { error?: string };
 
-export async function createBanner(
-  _prev: BannerFormState,
-  formData: FormData
-): Promise<BannerFormState> {
-  if (!(await requireAdmin())) return { error: "Não autorizado." };
+type ParsedBanner = {
+  title: string | null;
+  subtitle: string | null;
+  ctaLabel: string | null;
+  ctaHref: string | null;
+  theme: string;
+  placement: BannerPlacement;
+  imageUrl: string | null;
+  imageUrlMobile: string | null;
+  imageOnly: boolean;
+  position: number;
+  categoryId: string | null;
+};
 
+function parseBannerForm(formData: FormData): { error: string } | { data: ParsedBanner } {
   const title = String(formData.get("title") ?? "").trim();
   const subtitle = String(formData.get("subtitle") ?? "").trim();
   const ctaLabel = String(formData.get("ctaLabel") ?? "").trim();
@@ -39,7 +48,7 @@ export async function createBanner(
     return { error: "Informe um título (ou marque \"somente imagem\" e envie uma foto)." };
   }
 
-  await db.banner.create({
+  return {
     data: {
       title: title || null,
       subtitle: subtitle || null,
@@ -53,7 +62,35 @@ export async function createBanner(
       position,
       categoryId: placement === "CATEGORY_ICON" ? categoryId : null,
     },
-  });
+  };
+}
+
+export async function createBanner(
+  _prev: BannerFormState,
+  formData: FormData
+): Promise<BannerFormState> {
+  if (!(await requireAdmin())) return { error: "Não autorizado." };
+
+  const parsed = parseBannerForm(formData);
+  if ("error" in parsed) return parsed;
+
+  await db.banner.create({ data: parsed.data });
+  revalidatePath("/admin/banners");
+  revalidatePath("/");
+  return {};
+}
+
+export async function updateBanner(
+  id: string,
+  _prev: BannerFormState,
+  formData: FormData
+): Promise<BannerFormState> {
+  if (!(await requireAdmin())) return { error: "Não autorizado." };
+
+  const parsed = parseBannerForm(formData);
+  if ("error" in parsed) return parsed;
+
+  await db.banner.update({ where: { id }, data: parsed.data });
   revalidatePath("/admin/banners");
   revalidatePath("/");
   return {};
@@ -72,4 +109,3 @@ export async function deleteBanner(id: string) {
   await db.banner.delete({ where: { id } });
   revalidatePath("/admin/banners");
 }
-
