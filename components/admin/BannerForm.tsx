@@ -9,7 +9,8 @@ const PIXEL_HINTS: Record<string, string> = {
   CARD: "recomendado 800×500px (proporção ~16:10)",
   CAROUSEL: "recomendado 480×600px (proporção ~4:5)",
   HERO: "recomendado 1920×700px (faixa larga, ~2.7:1)",
-  CATEGORY_ICON: "recomendado 200×200px, imagem quadrada",
+  CATEGORY_ICON:
+    "recomendado 400×500px, fundo transparente (PNG) e o assunto encostado na base — a imagem \"vaza\" pra cima da bolinha",
 };
 
 const initialState: BannerFormState = {};

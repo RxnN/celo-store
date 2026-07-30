@@ -36,7 +36,7 @@ export function CategoryShortcuts({ categories }: { categories: CategoryShortcut
 
       <div
         ref={trackRef}
-        className="scrollbar-none flex gap-5 overflow-x-auto scroll-smooth pb-1 sm:justify-between sm:overflow-visible"
+        className="scrollbar-none flex gap-5 overflow-x-auto scroll-smooth pt-6 pb-1 sm:justify-between sm:overflow-visible"
       >
         {categories.map((c) => (
           <Link
@@ -44,15 +44,16 @@ export function CategoryShortcuts({ categories }: { categories: CategoryShortcut
             href={c.href}
             className="group flex shrink-0 flex-col items-center gap-2"
           >
-            <div className="neon-interactive flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border border-line bg-surface-2 group-hover:border-cyan sm:h-20 sm:w-20">
+            <div className="neon-interactive relative flex h-16 w-16 items-center justify-center rounded-full border border-line bg-surface-2 group-hover:border-cyan sm:h-20 sm:w-20">
               {c.image ? (
-                <Image
-                  src={c.image}
-                  alt={c.name}
-                  width={80}
-                  height={80}
-                  className="h-full w-full object-cover"
-                />
+                <div className="pointer-events-none absolute bottom-0 left-1/2 h-[135%] w-[125%] -translate-x-1/2">
+                  <Image
+                    src={c.image}
+                    alt={c.name}
+                    fill
+                    className="object-contain object-bottom"
+                  />
+                </div>
               ) : (
                 <span className="text-lg font-extrabold text-text-faint">{c.name.charAt(0)}</span>
               )}
