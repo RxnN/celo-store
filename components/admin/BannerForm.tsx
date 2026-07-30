@@ -81,7 +81,7 @@ export function BannerForm({
         <ImageUploader
           name="imageUrlMobile"
           label="Imagem mobile (opcional)"
-          hint="se não enviar, usa a imagem acima também no celular"
+          hint="recomendado 1080×830px (~1.3:1) — se não enviar, usa a imagem acima também no celular"
         />
       ) : null}
 
