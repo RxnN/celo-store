@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { formatPrice, toNumber } from "@/lib/utils";
 import { LinkButton } from "@/components/ui/Button";
+import { Confetti } from "@/components/ui/Confetti";
 
 export default async function CheckoutSuccessPage({
   searchParams,
@@ -27,10 +28,11 @@ export default async function CheckoutSuccessPage({
 
   return (
     <div className="mx-auto max-w-lg px-5 py-16 text-center sm:px-7">
+      <Confetti />
       <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-cyan/10 text-2xl text-cyan">
         ✓
       </div>
-      <h1 className="mb-2 text-xl font-extrabold">Pedido confirmado</h1>
+      <h1 className="mb-2 text-xl font-extrabold">Pedido efetuado com sucesso!</h1>
       <p className="mb-6 text-sm text-text-muted">
         {order
           ? `Pedido #${order.id.slice(-8)} recebido. Total: ${formatPrice(toNumber(order.total))}.`

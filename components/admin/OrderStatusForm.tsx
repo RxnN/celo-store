@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useAdminToastStore } from "@/lib/admin-toast-store";
 
 const STATUS_OPTIONS = [
   "PENDING",
@@ -35,6 +36,7 @@ export function OrderStatusForm({
   const [code, setCode] = useState(trackingCode ?? "");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const showToast = useAdminToastStore((s) => s.show);
 
   const needsTrackingCode = selected === "SHIPPED";
 
@@ -52,16 +54,19 @@ export function OrderStatusForm({
     const result = await action(orderId, formData);
     setPending(false);
     if (result?.error) setError(result.error);
+    else showToast("Status do pedido salvo com sucesso!");
   }
 
-  function handleStatusChange(newStatus: string) {
+  async function handleStatusChange(newStatus: string) {
     setSelected(newStatus);
     setError(null);
     if (newStatus !== "SHIPPED") {
       const formData = new FormData();
       formData.set("status", newStatus);
       formData.set("trackingCode", code.trim());
-      action(orderId, formData);
+      const result = await action(orderId, formData);
+      if (result?.error) setError(result.error);
+      else showToast("Status do pedido salvo com sucesso!");
     }
   }
 

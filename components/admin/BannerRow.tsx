@@ -46,6 +46,7 @@ export function BannerRow({
           categories={categories}
           action={updateBanner.bind(null, b.id)}
           submitLabel="salvar"
+          onSuccess={() => setEditing(false)}
           defaultValues={{
             placement: b.placement,
             theme: b.theme,

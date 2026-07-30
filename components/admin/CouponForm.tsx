@@ -1,8 +1,9 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { createCoupon, CouponFormState } from "@/app/admin/cupons/actions";
+import { useAdminToastStore } from "@/lib/admin-toast-store";
 
 const initialState: CouponFormState = {};
 
@@ -11,8 +12,23 @@ export function CouponForm({ products }: { products: { id: string; name: string 
   const [type, setType] = useState("PERCENT");
   const [scope, setScope] = useState("ORDER_TOTAL");
 
+  const formRef = useRef<HTMLFormElement>(null);
+  const wasPending = useRef(false);
+  const showToast = useAdminToastStore((s) => s.show);
+
+  useEffect(() => {
+    if (wasPending.current && !pending && !state.error) {
+      showToast("Cupom adicionado com sucesso!");
+      formRef.current?.reset();
+      setType("PERCENT");
+      setScope("ORDER_TOTAL");
+    }
+    wasPending.current = pending;
+  }, [pending, state, showToast]);
+
   return (
     <form
+      ref={formRef}
       action={formAction}
       className="mb-8 flex flex-col gap-3 rounded-xl border border-line bg-surface p-4"
     >

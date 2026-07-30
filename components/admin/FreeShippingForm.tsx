@@ -1,11 +1,12 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import {
   createFreeShippingRule,
   FreeShippingFormState,
 } from "@/app/admin/frete-gratis/actions";
+import { useAdminToastStore } from "@/lib/admin-toast-store";
 
 const initialState: FreeShippingFormState = {};
 
@@ -13,8 +14,22 @@ export function FreeShippingForm({ products }: { products: { id: string; name: s
   const [state, formAction, pending] = useActionState(createFreeShippingRule, initialState);
   const [type, setType] = useState("MIN_VALUE");
 
+  const formRef = useRef<HTMLFormElement>(null);
+  const wasPending = useRef(false);
+  const showToast = useAdminToastStore((s) => s.show);
+
+  useEffect(() => {
+    if (wasPending.current && !pending && !state.error) {
+      showToast("Regra de frete grátis adicionada com sucesso!");
+      formRef.current?.reset();
+      setType("MIN_VALUE");
+    }
+    wasPending.current = pending;
+  }, [pending, state, showToast]);
+
   return (
     <form
+      ref={formRef}
       action={formAction}
       className="mb-8 flex flex-col gap-3 rounded-xl border border-line bg-surface p-4"
     >

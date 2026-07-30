@@ -98,7 +98,7 @@ export async function createProduct(
   });
 
   revalidatePath("/admin/produtos");
-  redirect("/admin/produtos");
+  redirect("/admin/produtos?saved=1");
 }
 
 export async function updateProduct(
@@ -155,7 +155,7 @@ export async function updateProduct(
   });
 
   revalidatePath("/admin/produtos");
-  redirect("/admin/produtos");
+  redirect("/admin/produtos?saved=1");
 }
 
 export async function toggleProduct(productId: string, active: boolean) {

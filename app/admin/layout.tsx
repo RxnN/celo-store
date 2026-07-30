@@ -3,6 +3,7 @@ import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { SignOutButton } from "@/components/layout/SignOutButton";
 import { AdminMobileNav } from "@/components/admin/AdminMobileNav";
+import { AdminToast } from "@/components/admin/AdminToast";
 
 const NAV_ITEMS = [
   { href: "/admin/produtos", label: "Produtos" },
@@ -53,6 +54,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </div>
       </aside>
       <main className="min-w-0 flex-1 px-4 py-5 sm:px-8 sm:py-7">{children}</main>
+      <AdminToast />
     </div>
   );
 }

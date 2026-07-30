@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { DeleteButton } from "./DeleteButton";
 import { updateCategory, deleteCategory } from "@/app/admin/categorias/actions";
+import { useAdminToastStore } from "@/lib/admin-toast-store";
 
 export function CategoryRow({
   category,
@@ -10,6 +11,7 @@ export function CategoryRow({
   category: { id: string; name: string; slug: string; _count: { products: number } };
 }) {
   const [editing, setEditing] = useState(false);
+  const showToast = useAdminToastStore((s) => s.show);
 
   if (editing) {
     return (
@@ -18,6 +20,7 @@ export function CategoryRow({
           <form
             action={async (formData) => {
               await updateCategory(formData);
+              showToast("Categoria salva com sucesso!");
               setEditing(false);
             }}
             className="flex flex-wrap items-end gap-3"

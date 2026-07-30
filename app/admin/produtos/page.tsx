@@ -2,6 +2,7 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { formatPrice, toNumber } from "@/lib/utils";
 import { LinkButton } from "@/components/ui/Button";
+import { SavedToastFromQuery } from "@/components/admin/SavedToastFromQuery";
 import { toggleProduct } from "./actions";
 
 export default async function AdminProductsPage() {
@@ -12,6 +13,7 @@ export default async function AdminProductsPage() {
 
   return (
     <div>
+      <SavedToastFromQuery message="Produto salvo com sucesso!" />
       <div className="mb-6 flex items-center justify-between">
         <h1 className="text-xl font-extrabold">Produtos</h1>
         <LinkButton href="/admin/produtos/novo">+ novo produto</LinkButton>

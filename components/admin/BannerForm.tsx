@@ -1,9 +1,10 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { ImageUploader } from "./ImageUploader";
 import { BannerFormState } from "@/app/admin/banners/actions";
+import { useAdminToastStore } from "@/lib/admin-toast-store";
 
 const PIXEL_HINTS: Record<string, string> = {
   CARD: "recomendado 800×500px (proporção ~16:10)",
@@ -34,20 +35,46 @@ export function BannerForm({
   action,
   defaultValues,
   submitLabel = "adicionar promoção",
+  onSuccess,
 }: {
   categories: { id: string; name: string }[];
   action: (prevState: BannerFormState, formData: FormData) => Promise<BannerFormState>;
   defaultValues?: BannerDefaultValues;
   submitLabel?: string;
+  onSuccess?: () => void;
 }) {
   const [state, formAction, pending] = useActionState(action, initialState);
   const [placement, setPlacement] = useState(defaultValues?.placement ?? "CARD");
   const [imageOnly, setImageOnly] = useState(defaultValues?.imageOnly ?? false);
+  const [imageKey, setImageKey] = useState(0);
   const isHero = placement === "HERO";
   const isCategoryIcon = placement === "CATEGORY_ICON";
+  const isEditing = Boolean(defaultValues);
+
+  const formRef = useRef<HTMLFormElement>(null);
+  const wasPending = useRef(false);
+  const showToast = useAdminToastStore((s) => s.show);
+
+  useEffect(() => {
+    if (wasPending.current && !pending && !state.error) {
+      showToast(isEditing ? "Promoção salva com sucesso!" : "Promoção adicionada com sucesso!");
+      if (!isEditing) {
+        formRef.current?.reset();
+        setPlacement("CARD");
+        setImageOnly(false);
+        setImageKey((k) => k + 1);
+      }
+      onSuccess?.();
+    }
+    wasPending.current = pending;
+  }, [pending, state, isEditing, onSuccess, showToast]);
 
   return (
-    <form action={formAction} className="mb-8 flex flex-col gap-3 rounded-xl border border-line bg-surface p-4">
+    <form
+      ref={formRef}
+      action={formAction}
+      className="mb-8 flex flex-col gap-3 rounded-xl border border-line bg-surface p-4"
+    >
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <select
           name="placement"
@@ -98,6 +125,7 @@ export function BannerForm({
       ) : null}
 
       <ImageUploader
+        key={`image-${imageKey}`}
         name="imageUrl"
         label="Imagem"
         hint={PIXEL_HINTS[placement]}
@@ -106,6 +134,7 @@ export function BannerForm({
 
       {isHero ? (
         <ImageUploader
+          key={`image-mobile-${imageKey}`}
           name="imageUrlMobile"
           label="Imagem mobile (opcional)"
           hint="recomendado 1080×830px (~1.3:1) — se não enviar, usa a imagem acima também no celular"

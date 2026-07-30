@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { DeleteButton } from "./DeleteButton";
 import { updateBrand, deleteBrand } from "@/app/admin/marcas/actions";
+import { useAdminToastStore } from "@/lib/admin-toast-store";
 
 export function BrandRow({
   brand,
@@ -10,6 +11,7 @@ export function BrandRow({
   brand: { id: string; name: string; slug: string; _count: { products: number } };
 }) {
   const [editing, setEditing] = useState(false);
+  const showToast = useAdminToastStore((s) => s.show);
 
   if (editing) {
     return (
@@ -18,6 +20,7 @@ export function BrandRow({
           <form
             action={async (formData) => {
               await updateBrand(formData);
+              showToast("Marca salva com sucesso!");
               setEditing(false);
             }}
             className="flex flex-wrap items-end gap-3"

@@ -117,6 +117,26 @@ body {
   animation: toast-in 0.25s ease-out;
 }
 
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-10px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(var(--confetti-rotate, 360deg));
+    opacity: 0;
+  }
+}
+
+.confetti-piece {
+  position: absolute;
+  top: -10px;
+  border-radius: 1px;
+  animation-name: confetti-fall;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .neon-interactive,
   .neon-lift {
@@ -129,6 +149,9 @@ body {
   .neon-pulse {
     animation: none;
     box-shadow: var(--glow-cyan-sm);
+  }
+  .confetti-piece {
+    display: none;
   }
 }
 

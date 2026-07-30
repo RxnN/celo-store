@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { DeleteButton } from "./DeleteButton";
 import { updateSubcategory, deleteSubcategory } from "@/app/admin/subcategorias/actions";
+import { useAdminToastStore } from "@/lib/admin-toast-store";
 
 export function SubcategoryRow({
   subcategory,
@@ -19,6 +20,7 @@ export function SubcategoryRow({
   categories: { id: string; name: string }[];
 }) {
   const [editing, setEditing] = useState(false);
+  const showToast = useAdminToastStore((s) => s.show);
 
   if (editing) {
     return (
@@ -27,6 +29,7 @@ export function SubcategoryRow({
           <form
             action={async (formData) => {
               await updateSubcategory(formData);
+              showToast("Subcategoria salva com sucesso!");
               setEditing(false);
             }}
             className="flex flex-wrap items-end gap-3"
