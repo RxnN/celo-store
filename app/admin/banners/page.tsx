@@ -1,7 +1,8 @@
 import Image from "next/image";
 import { db } from "@/lib/db";
 import { BannerForm } from "@/components/admin/BannerForm";
-import { toggleBanner } from "./actions";
+import { DeleteButton } from "@/components/admin/DeleteButton";
+import { toggleBanner, deleteBanner } from "./actions";
 
 const PLACEMENT_LABEL: Record<string, string> = {
   CARD: "card (linha de promoções)",
@@ -53,6 +54,7 @@ export default async function AdminBannersPage() {
                   {b.active ? "ativo" : "inativo"}
                 </button>
               </form>
+              <DeleteButton action={deleteBanner.bind(null, b.id)} />
             </div>
           </div>
         ))}

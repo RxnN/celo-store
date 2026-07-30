@@ -57,3 +57,10 @@ export async function toggleBanner(id: string, active: boolean) {
   revalidatePath("/admin/banners");
 }
 
+export async function deleteBanner(id: string) {
+  if (!(await requireAdmin())) return;
+
+  await db.banner.delete({ where: { id } });
+  revalidatePath("/admin/banners");
+}
+
