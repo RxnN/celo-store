@@ -13,7 +13,7 @@ export default async function AdminCategoriesPage() {
     <div className="max-w-2xl">
       <h1 className="mb-6 text-xl font-extrabold">Categorias</h1>
 
-      <form action={createCategory} className="mb-8 flex items-end gap-3">
+      <form action={createCategory} className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end">
         <div className="flex-1">
           <label className="mb-1.5 block text-xs font-semibold text-text-muted">Nome</label>
           <input

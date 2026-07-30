@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getShippingQuote } from "@/lib/shipping";
+import { withApiLogging } from "@/lib/api-handler";
 
 const BodySchema = z.object({
   items: z.array(z.object({ productId: z.string(), quantity: z.number().int().positive() })).min(1),
@@ -8,7 +9,7 @@ const BodySchema = z.object({
   destinationZip: z.string().optional(),
 });
 
-export async function POST(request: Request) {
+async function handlePOST(request: Request) {
   const body = await request.json().catch(() => null);
   const parsed = BodySchema.safeParse(body);
   if (!parsed.success) {
@@ -23,3 +24,5 @@ export async function POST(request: Request) {
 
   return NextResponse.json(quote);
 }
+
+export const POST = withApiLogging(handlePOST);

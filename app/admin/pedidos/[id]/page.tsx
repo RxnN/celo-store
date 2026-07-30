@@ -30,7 +30,7 @@ export default async function AdminOrderDetailPage({
         ← todos os pedidos
       </Link>
 
-      <div className="mb-6 flex items-start justify-between gap-4">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="text-xl font-extrabold">Pedido #{order.id.slice(-8)}</h1>
           <p className="text-sm text-text-muted">

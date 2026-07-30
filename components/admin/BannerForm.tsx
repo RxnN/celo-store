@@ -21,7 +21,7 @@ export function BannerForm() {
 
   return (
     <form action={formAction} className="mb-8 flex flex-col gap-3 rounded-xl border border-line bg-surface p-4">
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <select
           name="placement"
           value={placement}
@@ -77,7 +77,7 @@ export function BannerForm() {
 
       {!isHero && !imageOnly ? (
         <>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <input
               name="title"
               placeholder="Título"
@@ -89,7 +89,7 @@ export function BannerForm() {
               className="h-10 rounded-lg border border-line bg-surface-2 px-3 text-sm focus:border-cyan focus:outline-none"
             />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <input
               name="ctaLabel"
               placeholder="Texto do botão (opcional)"

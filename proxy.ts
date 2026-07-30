@@ -7,6 +7,7 @@ export const proxy = auth((req) => {
   const isAdminRoute = req.nextUrl.pathname.startsWith("/admin");
   const isAdmin = req.auth?.user?.role === "ADMIN";
 
+  const requestId = req.headers.get("x-request-id") ?? crypto.randomUUID();
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
 
   // 'strict-dynamic' propaga confiança: um script já autorizado pelo nonce
@@ -37,6 +38,7 @@ export const proxy = auth((req) => {
     .join("; ");
 
   function withSecurityHeaders(response: NextResponse) {
+    response.headers.set("x-request-id", requestId);
     response.headers.set("Content-Security-Policy", csp);
     response.headers.set("X-Frame-Options", "DENY");
     response.headers.set("X-Content-Type-Options", "nosniff");
@@ -62,6 +64,7 @@ export const proxy = auth((req) => {
 
   const requestHeaders = new Headers(req.headers);
   requestHeaders.set("x-nonce", nonce);
+  requestHeaders.set("x-request-id", requestId);
 
   return withSecurityHeaders(NextResponse.next({ request: { headers: requestHeaders } }));
 });

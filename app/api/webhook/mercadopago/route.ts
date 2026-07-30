@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import crypto from "crypto";
 import { MercadoPagoConfig, Payment } from "mercadopago";
 import { db } from "@/lib/db";
+import { withApiLogging } from "@/lib/api-handler";
+import { logger } from "@/lib/logger";
 
 function isValidSignature(request: Request, dataId: string): boolean {
   const secret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
@@ -31,7 +33,7 @@ function isValidSignature(request: Request, dataId: string): boolean {
   }
 }
 
-export async function POST(request: Request) {
+async function handlePOST(request: Request) {
   const body = await request.json().catch(() => null);
   const paymentId = body?.data?.id;
 
@@ -57,8 +59,10 @@ export async function POST(request: Request) {
       data: { status, mpPaymentId: String(payment.id) },
     });
   } catch (err) {
-    console.error("Erro ao processar webhook Mercado Pago:", err);
+    logger.error("webhook.mercadopago_processing_failed", err, { paymentId });
   }
 
   return NextResponse.json({ received: true });
 }
+
+export const POST = withApiLogging(handlePOST);

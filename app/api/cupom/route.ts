@@ -3,6 +3,7 @@ import { z } from "zod";
 import { validateCoupon } from "@/lib/coupons";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { getClientIp } from "@/lib/request-ip";
+import { withApiLogging } from "@/lib/api-handler";
 
 const BodySchema = z.object({
   code: z.string().min(1),
@@ -12,7 +13,7 @@ const BodySchema = z.object({
   subtotal: z.number().nonnegative(),
 });
 
-export async function POST(request: Request) {
+async function handlePOST(request: Request) {
   const ip = getClientIp(request.headers);
   const rateLimit = checkRateLimit(`cupom:${ip}`, 10, 5 * 60 * 1000);
   if (!rateLimit.ok) {
@@ -40,3 +41,5 @@ export async function POST(request: Request) {
     scope: result.coupon.scope,
   });
 }
+
+export const POST = withApiLogging(handlePOST);

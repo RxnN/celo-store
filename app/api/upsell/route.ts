@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { toProductCardData } from "@/components/product/product-card-data";
+import { withApiLogging } from "@/lib/api-handler";
 
-export async function GET(request: Request) {
+async function handleGET(request: Request) {
   const { searchParams } = new URL(request.url);
   const excludeIds = (searchParams.get("exclude") ?? "")
     .split(",")
@@ -41,3 +42,5 @@ export async function GET(request: Request) {
 
   return NextResponse.json({ products: products.map(toProductCardData) });
 }
+
+export const GET = withApiLogging(handleGET);

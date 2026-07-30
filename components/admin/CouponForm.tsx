@@ -23,7 +23,7 @@ export function CouponForm({ products }: { products: { id: string; name: string 
         className="h-10 rounded-lg border border-line bg-surface-2 px-3 text-sm uppercase focus:border-cyan focus:outline-none"
       />
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <select
           name="type"
           value={type}

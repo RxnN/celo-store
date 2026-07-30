@@ -76,7 +76,7 @@ export function ProductForm({
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div>
           <label className="mb-1.5 block text-xs font-semibold text-text-muted">Preço (R$)</label>
           <input
@@ -104,7 +104,7 @@ export function ProductForm({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div>
           <label className="mb-1.5 block text-xs font-semibold text-text-muted">Categoria</label>
           <select
@@ -197,7 +197,7 @@ export function ProductForm({
         <label className="mb-1.5 block text-xs font-semibold text-text-muted">
           Peso e dimensões (opcional — usado pra calcular o frete automaticamente)
         </label>
-        <div className="grid grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <input
             name="weightGrams"
             type="number"

@@ -7,6 +7,7 @@ import { isEmailConfigured, sendPasswordResetEmail } from "@/lib/email";
 import { verifyTurnstileToken } from "@/lib/turnstile";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { getClientIp } from "@/lib/request-ip";
+import { logger } from "@/lib/logger";
 
 export type ForgotPasswordState = { error?: string; resetUrl?: string; emailSent?: boolean };
 
@@ -54,7 +55,9 @@ export async function requestPasswordReset(
   const resetPath = `/conta/redefinir-senha?token=${token}`;
 
   if (isEmailConfigured()) {
-    await sendPasswordResetEmail(user.email, `${baseUrl}${resetPath}`).catch(() => {});
+    await sendPasswordResetEmail(user.email, `${baseUrl}${resetPath}`).catch((err) => {
+      logger.error("password_reset.email_send_failed", err, { userId: user.id });
+    });
     return { emailSent: true };
   }
 

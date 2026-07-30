@@ -9,6 +9,8 @@ import { checkRateLimit } from "@/lib/rate-limit";
 import { getClientIp } from "@/lib/request-ip";
 import { isTrustedOrigin } from "@/lib/verify-origin";
 import { verifyTurnstileToken } from "@/lib/turnstile";
+import { withApiLogging } from "@/lib/api-handler";
+import { logger } from "@/lib/logger";
 
 const CheckoutSchema = z.object({
   address: z.object({
@@ -37,7 +39,7 @@ class InsufficientStockError extends Error {
   }
 }
 
-export async function POST(request: Request) {
+async function handlePOST(request: Request) {
   if (!isTrustedOrigin(request)) {
     return NextResponse.json({ error: "Origem da requisição não confiável." }, { status: 403 });
   }
@@ -206,7 +208,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ redirectUrl });
       }
     } catch (err) {
-      console.error("Erro ao criar preferência Mercado Pago:", err);
+      logger.error("checkout.mercadopago_preference_failed", err, { orderId: order.id });
     }
   }
 
@@ -214,3 +216,5 @@ export async function POST(request: Request) {
   // (simulada), pra dar pra testar o fluxo completo sem depender de conta externa.
   return NextResponse.json({ redirectUrl: `/checkout/pagamento?order=${order.id}` });
 }
+
+export const POST = withApiLogging(handlePOST);

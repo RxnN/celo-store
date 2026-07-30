@@ -5,6 +5,7 @@ import { randomUUID } from "crypto";
 import { auth } from "@/lib/auth";
 import { isTrustedOrigin } from "@/lib/verify-origin";
 import { isR2Configured, uploadToR2 } from "@/lib/storage";
+import { withApiLogging } from "@/lib/api-handler";
 
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
 const MAX_SIZE_BYTES = 5 * 1024 * 1024;
@@ -15,7 +16,7 @@ const EXT_BY_TYPE: Record<string, string> = {
   "image/gif": "gif",
 };
 
-export async function POST(request: Request) {
+async function handlePOST(request: Request) {
   if (!isTrustedOrigin(request)) {
     return NextResponse.json({ error: "Origem da requisição não confiável." }, { status: 403 });
   }
@@ -60,3 +61,5 @@ export async function POST(request: Request) {
 
   return NextResponse.json({ url: `/uploads/${filename}` });
 }
+
+export const POST = withApiLogging(handlePOST);

@@ -19,7 +19,7 @@ export default async function AdminSubcategoriesPage() {
         Aparecem no dropdown do menu de cada categoria, na loja.
       </p>
 
-      <form action={createSubcategory} className="mb-8 flex items-end gap-3">
+      <form action={createSubcategory} className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end">
         <div className="flex-1">
           <label className="mb-1.5 block text-xs font-semibold text-text-muted">Categoria</label>
           <select
